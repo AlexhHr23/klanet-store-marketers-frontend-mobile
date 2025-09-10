@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klanet_store_marketters_frontend_mobile/config/utils/app_colors.dart';
+import 'package:klanet_store_marketters_frontend_mobile/features/auth/presentation/providers/register_form_provider.dart';
 import '../../../shared/widgets/widgets.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -62,12 +64,12 @@ class RegisterScreen extends StatelessWidget {
   }
 }
 
-class _RegisterForm extends StatelessWidget {
+class _RegisterForm extends ConsumerWidget {
   const _RegisterForm();
 
   @override
-  Widget build(BuildContext context) {
-    // final textStyles = Theme.of(context).textTheme;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final registerForm = ref.watch(registerFormProvider);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -75,21 +77,27 @@ class _RegisterForm extends StatelessWidget {
         children: [
           const SizedBox(height: 50),
 
-          const CustomTextFormField(
+          CustomTextFormField(
             label: 'Nombre',
-            keyboardType: TextInputType.emailAddress,
+            keyboardType: TextInputType.name,
+            onChanged: ref.read(registerFormProvider.notifier).onNameChange,
+            errorMessage: registerForm.name.errorMessage,
           ),
           const SizedBox(height: 30),
 
-          const CustomTextFormField(
-            label: 'Nombre apellido',
-            keyboardType: TextInputType.emailAddress,
+          CustomTextFormField(
+            label: 'Apellido',
+            keyboardType: TextInputType.name,
+            onChanged: ref.read(registerFormProvider.notifier).onLastNameChange,
+            errorMessage: registerForm.lastName.errorMessage,
           ),
           const SizedBox(height: 30),
 
-          const CustomTextFormField(
+          CustomTextFormField(
             label: 'Correo',
             keyboardType: TextInputType.emailAddress,
+            onChanged: ref.read(registerFormProvider.notifier).onEmailChange,
+            errorMessage: registerForm.email.errorMessage,
           ),
           const SizedBox(height: 30),
 
@@ -99,20 +107,31 @@ class _RegisterForm extends StatelessWidget {
           ),
           const SizedBox(height: 30),
 
-          const CustomTextFormField(label: 'Contraseña', obscureText: true),
-
-          const SizedBox(height: 30),
-
-          const CustomTextFormField(
-            label: 'Repita la contraseña',
+          CustomTextFormField(
+            label: 'Contraseña',
             obscureText: true,
+            onChanged: ref.read(registerFormProvider.notifier).onPasswordChange,
+            errorMessage: registerForm.password.errorMessage,
           ),
 
           const SizedBox(height: 30),
 
-          const CustomTextFormField(
-            label: 'Código de referido',
+          CustomTextFormField(
+            label: 'Repetir contraseña',
             obscureText: true,
+            onChanged: ref
+                .read(registerFormProvider.notifier)
+                .onRepeatPasswordChange,
+            errorMessage: registerForm.repeatPassword.errorMessage,
+          ),
+
+          const SizedBox(height: 30),
+
+          CustomTextFormField(
+            label: 'Código de referido',
+            keyboardType: TextInputType.name,
+            onChanged: ref.read(registerFormProvider.notifier).onCodeChange,
+            errorMessage: registerForm.name.errorMessage,
           ),
 
           const SizedBox(height: 30),
@@ -120,7 +139,12 @@ class _RegisterForm extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             height: 60,
-            child: CustomFilledButton(text: 'Crear', onPressed: () {}),
+            child: CustomFilledButton(
+              text: 'Crear',
+              onPressed: () {
+                ref.read(registerFormProvider.notifier).onFormSubmit();
+              },
+            ),
           ),
           const SizedBox(height: 20),
           Row(

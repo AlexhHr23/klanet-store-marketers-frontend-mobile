@@ -27,7 +27,7 @@ class TextInput extends FormzInput<String, TextError> {
   @override
   TextError? validator(String value) {
     if (value.isEmpty || value.trim().isEmpty) return TextError.empty;
-    if (value.length < 3) return TextError.length;
+    if (value.length > 3) return TextError.length;
     if (!passwordRegExp.hasMatch(value)) return TextError.format;
 
     return null;

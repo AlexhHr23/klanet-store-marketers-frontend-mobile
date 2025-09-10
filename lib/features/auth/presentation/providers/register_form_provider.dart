@@ -2,6 +2,141 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:formz/formz.dart';
 import 'package:klanet_store_marketters_frontend_mobile/features/shared/infrastructure/inputs/inputs.dart';
 
+final registerFormProvider =
+    StateNotifierProvider.autoDispose<RegisterFormNotifier, RegisterFormState>((
+      ref,
+    ) {
+      return RegisterFormNotifier();
+    });
+
+class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
+  RegisterFormNotifier() : super(RegisterFormState());
+
+  onNameChange(String value) {
+    final newName = TextInput.dirty(value);
+    state = state.copyWith(
+      name: newName,
+      isValid: Formz.validate([
+        newName,
+        state.lastName,
+        state.email,
+        state.password,
+        state.repeatPassword,
+        ?state.code,
+      ]),
+    );
+  }
+
+  onLastNameChange(String value) {
+    final newLastName = TextInput.dirty(value);
+    state = state.copyWith(
+      lastName: newLastName,
+      isValid: Formz.validate([
+        newLastName,
+        state.name,
+        state.email,
+        state.password,
+        state.repeatPassword,
+        ?state.code,
+      ]),
+    );
+  }
+
+  onEmailChange(String value) {
+    final newEmail = Email.dirty(value);
+    state = state.copyWith(
+      email: newEmail,
+      isValid: Formz.validate([
+        newEmail,
+        state.name,
+        state.lastName,
+        state.password,
+        state.repeatPassword,
+        ?state.code,
+      ]),
+    );
+  }
+
+  onPasswordChange(String value) {
+    final newPassword = Password.dirty(value);
+    state = state.copyWith(
+      password: newPassword,
+      isValid: Formz.validate([
+        state.name,
+        state.lastName,
+        state.email,
+        newPassword,
+        state.repeatPassword,
+        ?state.code,
+      ]),
+    );
+  }
+
+  onRepeatPasswordChange(String value) {
+    final newRepeatPassword = RepeatPassword.dirty(
+      password: state.password.value,
+      value: value,
+    );
+    state = state.copyWith(
+      repeatPassword: newRepeatPassword,
+      isValid: Formz.validate([
+        state.name,
+        state.lastName,
+        state.email,
+        state.password,
+        newRepeatPassword,
+        ?state.code,
+      ]),
+    );
+  }
+
+  onCodeChange(String value) {
+    final newCode = Code.dirty(value);
+    state = state.copyWith(
+      code: newCode,
+      isValid: Formz.validate([
+        newCode,
+        state.name,
+        state.lastName,
+        state.email,
+        state.password,
+        state.repeatPassword,
+      ]),
+    );
+  }
+
+  onFormSubmit() {
+    _touchEveryField();
+    if (!state.isValid) return;
+    print(state);
+  }
+
+  _touchEveryField() {
+    final name = TextInput.dirty(state.name.value);
+    final lastName = TextInput.dirty(state.lastName.value);
+    final email = Email.dirty(state.email.value);
+    final password = Password.dirty(state.password.value);
+    final repeatPassword = RepeatPassword.dirty(
+      password: state.password.value,
+      value: state.repeatPassword.value,
+    );
+    final code = Code.dirty(state.code?.value ?? '');
+
+    state = state.copyWith(
+      email: email,
+      password: password,
+      isValid: Formz.validate([
+        name,
+        lastName,
+        email,
+        password,
+        repeatPassword,
+        code,
+      ]),
+    );
+  }
+}
+
 class RegisterFormState {
   final bool isPosting;
   final bool isFormPosted;
@@ -13,7 +148,7 @@ class RegisterFormState {
   final String telIso;
   final String telCode;
   final Password password;
-  final String repeatPassword;
+  final RepeatPassword repeatPassword;
   final Code? code;
 
   RegisterFormState({
@@ -27,7 +162,7 @@ class RegisterFormState {
     this.telIso = '',
     this.telCode = '',
     this.password = const Password.pure(),
-    this.repeatPassword = '',
+    this.repeatPassword = const RepeatPassword.pure(),
     this.code = const Code.pure(),
   });
 
@@ -42,7 +177,7 @@ class RegisterFormState {
     String? telIso,
     String? telCode,
     Password? password,
-    String? repeatPassword,
+    RepeatPassword? repeatPassword,
     Code? code,
   }) => RegisterFormState(
     isPosting: isPosting ?? this.isPosting,
@@ -76,62 +211,3 @@ class RegisterFormState {
     ''';
   }
 }
-
-class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
-  RegisterFormNotifier() : super(RegisterFormState());
-
-  onNameChange(String value) {
-    final newName = TextInput.dirty(value);
-    state = state.copyWith(
-      name: newName,
-      isValid: Formz.validate([newName, state.lastName, state.email]),
-    );
-  }
-
-  onLastNameChange(String value) {
-    final newLastName = TextInput.dirty(value);
-    state = state.copyWith(
-      lastName: newLastName,
-      isValid: Formz.validate([newLastName, state.name, state.email]),
-    );
-  }
-
-  onEmailChange(String value) {
-    final newEmail = Email.dirty(value);
-    state = state.copyWith(
-      email: newEmail,
-      isValid: Formz.validate([newEmail, state.password]),
-    );
-  }
-
-  onPasswordChange(String value) {
-    final newPassword = Password.dirty(value);
-    state = state.copyWith(
-      password: newPassword,
-      isValid: Formz.validate([state.email, newPassword]),
-    );
-  }
-
-  onFormSubmit() {
-    _touchEveryField();
-    if (!state.isValid) return;
-    print(state);
-  }
-
-  _touchEveryField() {
-    final email = Email.dirty(state.email.value);
-    final password = Password.dirty(state.password.value);
-    state = state.copyWith(
-      email: email,
-      password: password,
-      isValid: Formz.validate([email, password]),
-    );
-  }
-}
-
-final registerFormProvider =
-    StateNotifierProvider.autoDispose<RegisterFormNotifier, RegisterFormState>((
-      ref,
-    ) {
-      return RegisterFormNotifier();
-    });
