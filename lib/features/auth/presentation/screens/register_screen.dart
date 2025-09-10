@@ -81,7 +81,9 @@ class _RegisterForm extends ConsumerWidget {
             label: 'Nombre',
             keyboardType: TextInputType.name,
             onChanged: ref.read(registerFormProvider.notifier).onNameChange,
-            errorMessage: registerForm.name.errorMessage,
+            errorMessage: registerForm.isFormPosted
+                ? registerForm.name.errorMessage
+                : null,
           ),
           const SizedBox(height: 30),
 
@@ -89,7 +91,9 @@ class _RegisterForm extends ConsumerWidget {
             label: 'Apellido',
             keyboardType: TextInputType.name,
             onChanged: ref.read(registerFormProvider.notifier).onLastNameChange,
-            errorMessage: registerForm.lastName.errorMessage,
+            errorMessage: registerForm.isFormPosted
+                ? registerForm.lastName.errorMessage
+                : null,
           ),
           const SizedBox(height: 30),
 
@@ -97,13 +101,25 @@ class _RegisterForm extends ConsumerWidget {
             label: 'Correo',
             keyboardType: TextInputType.emailAddress,
             onChanged: ref.read(registerFormProvider.notifier).onEmailChange,
-            errorMessage: registerForm.email.errorMessage,
+            errorMessage: registerForm.isFormPosted
+                ? registerForm.email.errorMessage
+                : null,
           ),
           const SizedBox(height: 30),
 
-          const CustomTextFormField(
-            label: 'Telefono',
-            keyboardType: TextInputType.phone,
+          CustomPhoneFormField(
+            initialCountry: 'MX',
+            initialValue: registerForm.phoneNumber.value,
+            onChanged: (phone, isoCode, countryCode) {
+              ref
+                  .read(registerFormProvider.notifier)
+                  .onPhoneChange(phone, isoCode, countryCode ?? '');
+
+              // print('Teléfono: $phone, ISO: $isoCode, Código del País: $countryCode');
+            },
+            errorMessage: registerForm.isFormPosted
+                ? registerForm.phoneNumber.errorMessage
+                : null,
           ),
           const SizedBox(height: 30),
 
@@ -111,7 +127,9 @@ class _RegisterForm extends ConsumerWidget {
             label: 'Contraseña',
             obscureText: true,
             onChanged: ref.read(registerFormProvider.notifier).onPasswordChange,
-            errorMessage: registerForm.password.errorMessage,
+            errorMessage: registerForm.isFormPosted
+                ? registerForm.password.errorMessage
+                : null,
           ),
 
           const SizedBox(height: 30),
@@ -122,7 +140,9 @@ class _RegisterForm extends ConsumerWidget {
             onChanged: ref
                 .read(registerFormProvider.notifier)
                 .onRepeatPasswordChange,
-            errorMessage: registerForm.repeatPassword.errorMessage,
+            errorMessage: registerForm.isFormPosted
+                ? registerForm.repeatPassword.errorMessage
+                : null,
           ),
 
           const SizedBox(height: 30),
@@ -131,7 +151,9 @@ class _RegisterForm extends ConsumerWidget {
             label: 'Código de referido',
             keyboardType: TextInputType.name,
             onChanged: ref.read(registerFormProvider.notifier).onCodeChange,
-            errorMessage: registerForm.name.errorMessage,
+            errorMessage: registerForm.isFormPosted
+                ? registerForm.code?.errorMessage
+                : null,
           ),
 
           const SizedBox(height: 30),

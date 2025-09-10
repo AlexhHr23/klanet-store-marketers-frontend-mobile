@@ -14,11 +14,9 @@ class Code extends FormzInput<String, CodeError> {
   const Code.dirty(super.value) : super.dirty();
 
   String? get errorMessage {
-    if (isValid || isPure) return null;
+    if (value.isEmpty) return null;
 
-    // if (displayError == TextError.empty) return 'El campo es requerido';
-    if (displayError == CodeError.length) return 'Mínimo 3 caracteres';
-    // if (displayError == TextError.format) return 'Debe de tener solo letras';
+    if (displayError == CodeError.length) return 'Mínimo 6 caracteres';
 
     return null;
   }
@@ -26,9 +24,8 @@ class Code extends FormzInput<String, CodeError> {
   // Override validator to handle validating a given input value.
   @override
   CodeError? validator(String value) {
-    // if (value.isEmpty || value.trim().isEmpty) return TextError.empty;
-    if (value.length < 3) return CodeError.length;
-    // if (!passwordRegExp.hasMatch(value)) return TextError.format;
+    if (value.isEmpty) return null;
+    if (value.length < 6) return CodeError.length;
 
     return null;
   }

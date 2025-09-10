@@ -57,6 +57,24 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
     );
   }
 
+  onPhoneChange(String phone, String isoCode, String countryCode) {
+    final newPhone = PhoneNumber.dirty(phone);
+    state = state.copyWith(
+      phoneNumber: newPhone,
+      telIso: isoCode,
+      telCode: countryCode,
+      isValid: Formz.validate([
+        newPhone,
+        state.name,
+        state.lastName,
+        state.email,
+        state.password,
+        state.repeatPassword,
+        ?state.code,
+      ]),
+    );
+  }
+
   onPasswordChange(String value) {
     final newPassword = Password.dirty(value);
     state = state.copyWith(
@@ -106,6 +124,7 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
   }
 
   onFormSubmit() {
+    state = state.copyWith(isFormPosted: true);
     _touchEveryField();
     if (!state.isValid) return;
     print(state);
@@ -115,6 +134,7 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
     final name = TextInput.dirty(state.name.value);
     final lastName = TextInput.dirty(state.lastName.value);
     final email = Email.dirty(state.email.value);
+    final phoneNumber = PhoneNumber.dirty(state.phoneNumber.value);
     final password = Password.dirty(state.password.value);
     final repeatPassword = RepeatPassword.dirty(
       password: state.password.value,
@@ -123,12 +143,18 @@ class RegisterFormNotifier extends StateNotifier<RegisterFormState> {
     final code = Code.dirty(state.code?.value ?? '');
 
     state = state.copyWith(
+      name: name,
+      lastName: lastName,
       email: email,
+      phoneNumber: phoneNumber,
       password: password,
+      repeatPassword: repeatPassword,
+      code: code,
       isValid: Formz.validate([
         name,
         lastName,
         email,
+        phoneNumber,
         password,
         repeatPassword,
         code,
@@ -144,7 +170,7 @@ class RegisterFormState {
   final TextInput name;
   final TextInput lastName;
   final Email email;
-  final String phoneNumber;
+  final PhoneNumber phoneNumber;
   final String telIso;
   final String telCode;
   final Password password;
@@ -158,7 +184,7 @@ class RegisterFormState {
     this.name = const TextInput.pure(),
     this.lastName = const TextInput.pure(),
     this.email = const Email.pure(),
-    this.phoneNumber = '',
+    this.phoneNumber = const PhoneNumber.pure(),
     this.telIso = '',
     this.telCode = '',
     this.password = const Password.pure(),
@@ -173,7 +199,7 @@ class RegisterFormState {
     TextInput? name,
     TextInput? lastName,
     Email? email,
-    String? phoneNumber,
+    PhoneNumber? phoneNumber,
     String? telIso,
     String? telCode,
     Password? password,
@@ -204,6 +230,8 @@ class RegisterFormState {
       lastName: $lastName,
       email: $email,
       phoneNumber: $phoneNumber,
+      telIso: $telIso,
+      telCode: $telCode,
       password: $password,
       repeatPassword: $repeatPassword,
       code: $code,

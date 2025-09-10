@@ -1,21 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_intl_phone_field/flutter_intl_phone_field.dart';
 
-class CustomTextFormField extends StatelessWidget {
+class CustomPhoneFormField extends StatelessWidget {
   final String? label;
   final String? hint;
+  final String? initialValue;
+  final String? initialCountry;
   final String? errorMessage;
   final bool obscureText;
   final TextInputType? keyboardType;
-  final Function(String)? onChanged;
+  final void Function(String phone, String isoCode, String? countryCode)?
+  onChanged;
   final String? Function(String?)? validator;
 
-  const CustomTextFormField({
+  const CustomPhoneFormField({
     super.key,
     this.label,
     this.hint,
     this.errorMessage,
     this.obscureText = false,
     this.keyboardType = TextInputType.text,
+    this.initialCountry,
+    this.initialValue,
     this.onChanged,
     this.validator,
   });
@@ -32,7 +38,6 @@ class CustomTextFormField extends StatelessWidget {
     const borderRadius = Radius.circular(15);
 
     return Container(
-      // padding: const EdgeInsets.only(bottom: 0, top: 15),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: const BorderRadius.only(
@@ -48,11 +53,7 @@ class CustomTextFormField extends StatelessWidget {
           ),
         ],
       ),
-      child: TextFormField(
-        onChanged: onChanged,
-        validator: validator,
-        obscureText: obscureText,
-        keyboardType: keyboardType,
+      child: IntlPhoneField(
         style: const TextStyle(fontSize: 20, color: Colors.black54),
         decoration: InputDecoration(
           floatingLabelStyle: const TextStyle(
@@ -75,6 +76,14 @@ class CustomTextFormField extends StatelessWidget {
           focusColor: colors.primary,
           // icon: Icon( Icons.supervised_user_circle_outlined, color: colors.primary, )
         ),
+        initialCountryCode: initialCountry,
+        initialValue: initialValue,
+        languageCode: "es",
+        onChanged: (phone) {
+          if (onChanged != null) {
+            onChanged!(phone.number, phone.countryISOCode, phone.countryCode);
+          }
+        },
       ),
     );
   }

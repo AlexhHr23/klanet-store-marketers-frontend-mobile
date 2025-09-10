@@ -17,7 +17,9 @@ class TextInput extends FormzInput<String, TextError> {
     if (isValid || isPure) return null;
 
     if (displayError == TextError.empty) return 'El campo es requerido';
-    if (displayError == TextError.length) return 'Mínimo 3 caracteres';
+    if (displayError == TextError.length) {
+      return 'Debe de tener al menos 3 caracteres';
+    }
     if (displayError == TextError.format) return 'Debe de tener solo letras';
 
     return null;
@@ -27,7 +29,7 @@ class TextInput extends FormzInput<String, TextError> {
   @override
   TextError? validator(String value) {
     if (value.isEmpty || value.trim().isEmpty) return TextError.empty;
-    if (value.length > 3) return TextError.length;
+    if (value.length < 3) return TextError.length;
     if (!passwordRegExp.hasMatch(value)) return TextError.format;
 
     return null;
